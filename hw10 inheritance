@@ -1,0 +1,186 @@
+ArrayList<team7> team77;
+int score = 0;
+int count=0;
+int mousex, mousey;
+
+void setup() {
+  size(1000, 1000);
+  team77 = new ArrayList<team7>();
+  for (int i = 0; i < 10; i++) {
+    team77.add(new JB((int) random(0, 3)));
+    team77.add(new Loopy());
+  }
+}
+
+void draw() {
+  background(0, 0, 0);
+
+  for (int i = team77.size() - 1; i >= 0; i--) {
+    team7 current = team77.get(i);
+    for (int j = i + 1; j < team77.size(); j++) {
+      team77.get(i).collide(team77.get(j));
+    }
+    current.act();
+    current.show();
+
+    float distance = dist(mouseX, mouseY, current.x, current.y);
+    if (distance > 5 && distance < 15) {
+      team77.remove(i); // 충돌한 객체 제거
+    }
+  }
+  if (team77.isEmpty()) {
+    textSize(90);
+    text("Success", 150, 150);
+  }
+
+  if (count<90) {      //마우스로 커서 조작 설정
+    mousey++;
+  } else if (count<150) {
+    mousex++;
+  } else count=0;
+  fill(255, 255, 0);
+  circle(mousex, mousey, 30);
+  if (mousey>500)mousey=0;
+  if (mousex>500)mousex=0;
+  mousex=mouseX;
+  mousey=mouseY;
+  count++;
+}
+
+
+class team7 {
+  float x, y, d, vx, vy;
+  int col;
+
+  void collide(team7 other) {
+    float dd = dist(x, y, other.x, other.y);
+    if (dd < (d + other.d) / 4) {
+      float Vx = vx;
+      float Vy = vy;
+      vx = other.vx;
+      vy = other.vy;
+      other.vx = Vx;
+      other.vy = Vy;
+    }
+    float dx = abs(x - mouseX);
+    float dy = abs(y - mouseY);
+
+    if (dx > 5 && dx < 15 && dy > 5 && dy < 15) {
+      score += 1;
+    } else if (dx >= 0 && dx <= 10 && dy >= 0 && dy <= 10) {
+      score += 2;
+    } else if (dx >= 0 && dx <= 10 && dy >= 0 && dy <= 10) {
+      score--;
+    }
+
+    textSize(90);
+    text("score:"+score, 150, 150);
+  }
+
+  void act() {
+    x += vx;
+    y += vy;
+    if (x > width)
+      x = 0;
+    if (x < 0)
+      x = width;
+    if (y > height)
+      y = 0;
+    if (y < 0)
+      y = height;
+  }
+  void show() {
+  }
+}
+
+
+class JB extends team7 {
+  JB(int ii) {
+    col = ii;
+    d = 50;
+    vx = random(-5, 5);
+    vy = random(-5, 5);
+    x = random(width);
+    y = random(height);
+  }
+
+  void show() {
+    noStroke();
+    //ear
+    fill(255, 150, 0);
+    ellipse(x-0.5*d, y-0.4*d, d*0.5, d*2);
+    ellipse(x+0.5*d, y-0.4*d, d*0.5, d*2);
+    //face
+    if (col == 0) fill(255, 255, 0);
+    else if (col==1) fill(255);
+    else if (col==2) fill(0, 255, 255);
+    else if (col==3) fill(255, 0, 255);
+    else  fill(100, 100, 50);
+    circle(x, y+0.1*d, d*1.5);
+    //eye
+    fill(255);
+    circle(x-0.4*d, y-0.1*d, d*0.40);
+    circle(x+0.3*d, y-0.1*d, d*0.40);
+    //pupil
+    fill(0);
+    circle(x-0.4*d, y-0.1*d, d*0.2);
+    circle(x+0.3*d, y-0.1*d, d*0.2);
+    //nose
+    fill(0);
+    circle(x-0.1*d, y+0.3*d, d*0.3);
+    fill(255);
+    circle(x-0.1*d, y+0.3*d, d/10);
+    circle(x-0.2*d, y+0.3*d, d/10);
+    //mouth
+    fill(0);
+    arc(x-0.1*d, y+0.5*d, d/2, d*0.6, 0, PI);
+    //tongue
+    fill(255, 0, 0);
+    arc(x-0.1*d, y+0.6*d, d*0.3, 1.2*d, 0, PI);
+  }
+}
+
+
+class Loopy extends team7 {
+  Loopy() {
+    d = 16;
+    vx = random(-3, 3);
+    vy = random(-2, 2);
+    x = random(width);
+    y = random(height);
+  }
+
+  void show() {
+    noStroke();
+    fill(100, 100, 50);
+    circle(x, y, 16*2); //얼굴  x, y 기본값 200, 200 160
+    //볼
+    circle(x-4*2, y+4*2, 16);
+    circle(x+4*2, y+4*2, 16);
+    //귀
+    circle(x-6*2, y-6*2, 6);
+    circle(x+6*2, y-6*2, 6);
+    fill(0); //눈
+    circle(x-3*2, y-2*2, 6);
+    circle(x+3*2, y-2*2, 6);
+    fill(238, 229, 222);
+    circle(x-6*2, y-6*2, 3);
+    circle(x+6*2, y-6*2, 3);
+    fill(255); //눈 광
+    circle(x-3.3*2, y-2.5*2, 0.5*2);
+    circle(x+2.7*2, y-2.5*2, 0.5*2);
+    fill(139, 28, 98); //코
+    arc(x, y+1.6*2, 4*2, 3.2*2, PI, 2*PI);
+    arc(x, y+1.6*2, 4*2, 3.8*2, 0, PI);
+    stroke(0.1*2); //입
+    strokeWeight(0.5*2);
+    line(x-2*2, y+5*2, x+2*2, y+5*2);
+    fill(255);
+    rect(x-1*2, y+5*2, 2*2, 1*2);
+    //볼터치
+    noStroke();
+    fill(255, 69, 0);
+    ellipse(x-6*2, y, 2*2, 1*2);
+    ellipse(x+6*2, y, 2*2, 1*2);
+  }
+}
